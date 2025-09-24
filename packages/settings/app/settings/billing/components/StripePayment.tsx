@@ -18,29 +18,30 @@ export default function StripePayment({ amount, onSuccess, onError }: StripePaym
     setLoading(true);
 
     try {
-      // In a real implementation, you would:
-      // 1. Create a payment intent on the server
-      // 2. Use Stripe Elements to collect card details
-      // 3. Confirm the payment with Stripe
-      
-      // For this demo, we'll simulate a successful payment
-      const response = await fetch('/api/v1/billing/purchase', {
+      // Create checkout session for Stripe
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/billing/create-checkout-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount,
-          paymentMethodId: 'pm_mock_' + Date.now(), // Mock payment method
-          cardholderName,
-          email
+          type: 'credit_pack',
+          product_id: `credits_${Math.ceil(amount / 100)}`, // Convert cents to dollars for product ID
+          workspace_id: 'default-workspace', // TODO: Get from auth context
+          success_url: window.location.origin + '/settings/billing?success=true',
+          cancel_url: window.location.origin + '/settings/billing?canceled=true'
         })
       });
 
       if (response.ok) {
         const result = await response.json();
-        onSuccess(result);
+        // Redirect to Stripe Checkout
+        if (result.checkout_url) {
+          window.location.href = result.checkout_url;
+        } else {
+          onSuccess(result);
+        }
       } else {
         const errorData = await response.json();
-        onError(errorData.error || 'Payment failed');
+        onError(errorData.detail || errorData.error || 'Payment failed');
       }
     } catch (err) {
       onError('Payment failed');

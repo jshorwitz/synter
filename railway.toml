@@ -15,26 +15,27 @@ domains = ["${{RAILWAY_PUBLIC_DOMAIN}}"]
 [services.web-frontend.variables]
 NODE_ENV = "production"
 PORT = "3000"
+NEXT_PUBLIC_API_BASE_URL = "https://api-synter.railway.app"
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "${{STRIPE_PUBLISHABLE_KEY}}"
 
 [[services]]
-name = "api-server" 
-source = "packages/api"
+name = "ppc-backend"
+source = "apps/ppc-backend"
+domains = ["api-synter.railway.app"]
 
-[services.api-server.variables]
-NODE_ENV = "production"
-PORT = "8088"
-
-[[services]]
-name = "ai-services"
-source = "ai-adwords"
-
-[services.ai-services.variables]
-PORT = "8000"
-PYTHON_VERSION = "3.11"
-
-[[services]]
-name = "workers"
-source = "packages/workers"
-
-[services.workers.variables]
-NODE_ENV = "production"
+[services.ppc-backend.variables]
+ENVIRONMENT = "production"
+DATABASE_URL = "${{DATABASE_URL}}"
+STRIPE_SECRET_KEY = "${{STRIPE_SECRET_KEY}}"
+STRIPE_PUBLISHABLE_KEY = "${{STRIPE_PUBLISHABLE_KEY}}"
+STRIPE_WEBHOOK_SECRET = "${{STRIPE_WEBHOOK_SECRET}}"
+OPENAI_API_KEY = "${{OPENAI_API_KEY}}"
+SEMRUSH_API_KEY = "${{SEMRUSH_API_KEY}}"
+SIMILARWEB_API_KEY = "${{SIMILARWEB_API_KEY}}"
+BUILTWITH_API_KEY = "${{BUILTWITH_API_KEY}}"
+GOOGLE_ADS_DEVELOPER_TOKEN = "${{GOOGLE_ADS_DEVELOPER_TOKEN}}"
+GOOGLE_ADS_CLIENT_ID = "${{GOOGLE_ADS_CLIENT_ID}}"
+GOOGLE_ADS_CLIENT_SECRET = "${{GOOGLE_ADS_CLIENT_SECRET}}"
+SECRET_KEY = "${{SECRET_KEY}}"
+APP_BASIC_AUTH_USER = "${{APP_BASIC_AUTH_USER}}"
+APP_BASIC_AUTH_PASS = "${{APP_BASIC_AUTH_PASS}}"
